@@ -11,9 +11,11 @@ features <- read.table(paste(folder,"/features.txt",sep=""))[,2]
 activities <- read.table(paste(folder,"/activity_labels.txt",sep=""))[,2]
 activities <- tolower(activities)
 
-## read X data for train and test and save as data frames
-Xtraindf <- read.table( paste(folder, "/train/X_train.txt", sep=""  ) )
-Xtestdf <- read.table( paste(folder, "/test/X_test.txt", sep=""  ) )
+## read subject dat for train and test and save as data frames with label subject
+Straindf <- read.table( paste(folder, "/train/subject_train.txt", sep=""  ) )
+Stestdf <- read.table( paste(folder, "/test/subject_test.txt", sep=""  ) )
+colnames(Straindf)[1]<- "subject"
+colnames(Stestdf)[1]<- "subject"
 
 ## read Y data for train and test and save as data frames with label activity
 Ytraindf <- read.table( paste(folder, "/train/Y_train.txt", sep=""  ) )
@@ -28,14 +30,18 @@ for (i in 1:length(activities)) {
 }
 ## NOTE:: third task now complete
 
+## read X data for train and test and save as data frames
+Xtraindf <- read.table( paste(folder, "/train/X_train.txt", sep=""  ) )
+Xtestdf <- read.table( paste(folder, "/test/X_test.txt", sep=""  ) )
+
 ## appropriately label columns of X data using features
 colnames(Xtraindf) <- features
 colnames(Xtestdf) <- features
 ## NOTE:: third and fourth tasks now complete
 
-## combine subject (Y) data with X data
-traindf <- cbind(Ytraindf,Xtraindf)
-testdf <- cbind(Ytestdf,Xtestdf)
+## combine subject, Y, and X data
+traindf <- cbind(Straindf,Ytraindf,Xtraindf)
+testdf <- cbind(Stestdf,Ytestdf,Xtestdf)
 
 ## combine all data into 1 raw data table
 rawdata <- rbind(traindf, testdf)
@@ -44,17 +50,17 @@ rawdata <- rbind(traindf, testdf)
 ## It is also in our best interest to remove all 
 ## temporary data frames at this time and only keep 
 ## the raw data  in order to preserve memory
-remove(Xtraindf,Xtestdf,Ytraindf,Ytestdf,testdf,traindf,i)
+remove(Xtraindf,Xtestdf,Ytraindf,Ytestdf,Straindf,Stestdf,testdf,traindf,i)
 
 ## extract only mean and std data from raw data 
 ## while keeping activity data
-ms_indices <- grep("activity|mean()|std()",colnames(rawdata))
+ms_indices <- grep("subject|activity|mean()|std()",colnames(rawdata))
 ms_data <- rawdata[,ms_indices]
 remove(ms_indices)
 ## NOTE:: first, second, third, and fourth tasks now complete
 
 ## find the mean of all variables separated by activity
-avg_ms_data <- ddply(ms_data,"activity",colwise(mean))
+avg_ms_data <- ddply(ms_data,c("subject","activity"),colwise(mean))
 ## NOTE:: all tasks now complete
 
 write.table(avg_ms_data,file="tidydata.txt",row.name=FALSE)
