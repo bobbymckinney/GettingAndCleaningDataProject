@@ -57,3 +57,4 @@ remove(ms_indices)
 avg_ms_data <- ddply(ms_data,"activity",colwise(mean))
 ## NOTE:: all tasks now complete
 
+write.table(avg_ms_data,file="tidydata.txt",row.name=FALSE)
