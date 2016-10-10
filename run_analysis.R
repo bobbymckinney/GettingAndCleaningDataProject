@@ -44,7 +44,7 @@ traindf <- cbind(Straindf,Ytraindf,Xtraindf)
 testdf <- cbind(Stestdf,Ytestdf,Xtestdf)
 
 ## combine all data into 1 raw data table
-rawdata <- rbind(traindf, testdf)
+raw_data <- rbind(traindf, testdf)
 ## NOTE:: first, third, and fourth tasks now complete
 
 ## It is also in our best interest to remove all 
@@ -54,13 +54,13 @@ remove(Xtraindf,Xtestdf,Ytraindf,Ytestdf,Straindf,Stestdf,testdf,traindf,i)
 
 ## extract only mean and std data from raw data 
 ## while keeping activity data
-ms_indices <- grep("subject|activity|mean()|std()",colnames(rawdata))
-ms_data <- rawdata[,ms_indices]
+ms_indices <- grep("subject|activity|mean()|std()",colnames(raw_data))
+ms_data <- raw_data[,ms_indices]
 remove(ms_indices)
 ## NOTE:: first, second, third, and fourth tasks now complete
 
 ## find the mean of all variables separated by activity
-avg_ms_data <- ddply(ms_data,c("subject","activity"),colwise(mean))
+tidy_data <- ddply(ms_data,c("subject","activity"),colwise(mean))
 ## NOTE:: all tasks now complete
 
-write.table(avg_ms_data,file="tidydata.txt",row.name=FALSE)
+write.table(tidy_data,file="tidydata.txt",row.name=FALSE)
